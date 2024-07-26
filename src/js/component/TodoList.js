@@ -3,12 +3,30 @@ import React, { useState, useEffect } from "react";
 const TodoList = () => {
     const [todos, setTodos] = useState([]);
     const [input, setInput] = useState("");
+    const urlTodosAPI = "https://playground.4geeks.com/todo/"
 
     useEffect(() => {
-        getTodos();
+        addUser();
     }, []);
 
-    const urlTodosAPI = "https://playground.4geeks.com/todo/"
+    const addUser = () => {
+        fetch(urlTodosAPI + "users/bertomeu", {
+            method: "GET"
+        })
+            .then(response =>
+                response.status === 404
+                    ? fetch(urlTodosAPI + "users/bertomeu", { method: "POST" })
+                    : response.ok
+                        ? response.json()
+                        : null
+            )
+            .then((data) => {
+                getTodos(data.todos);
+            })
+            .catch((err) => { err })    
+    };
+
+    
 
     function getTodos() {
         fetch(urlTodosAPI + "users/bertomeu", {
@@ -64,12 +82,12 @@ const TodoList = () => {
                 })
                 .catch((err) => {
                     console.error(err);
-                });            
+                });
         });
     }
     return (
         <div className="container">
-            <h1 className="text-center" style={{ fontSize: "80px" }} >ToDo List</h1>         
+            <h1 className="text-center" style={{ fontSize: "80px" }} >ToDo List</h1>
             <div className="border border-white border-5 rounded-pill p-3 bg-white fs-2">
                 <input
                     type="text"
